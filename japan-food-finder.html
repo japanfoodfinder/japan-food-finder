@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taberu — Japan Food Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root { --ink:#1a1008;--paper:#f5efe6;--vermilion:#c0392b;--gold:#c9973a;--mist:#e8e0d4;--stamp:#8b3a2a; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh}
+  header{background:var(--ink);color:var(--paper);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:3px solid var(--vermilion)}
+  .logo{font-family:'Shippori Mincho',serif;font-size:28px;font-weight:800;letter-spacing:-1px;display:flex;align-items:center;gap:12px}
+  .logo-jp{font-size:14px;color:var(--gold);font-weight:400;letter-spacing:3px}
+  .logo-dot{width:8px;height:8px;background:var(--vermilion);border-radius:50%}
+  .header-actions{display:flex;gap:12px;align-items:center}
+  .btn{padding:8px 18px;border:none;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:all 0.2s}
+  .btn-outline{background:transparent;border:1.5px solid rgba(245,239,230,0.3);color:var(--paper)}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+  .btn-primary{background:var(--vermilion);color:white}
+  .btn-primary:hover{background:#a93226}
+  .app{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 65px)}
+  .sidebar{background:var(--paper);border-right:1px solid var(--mist);display:flex;flex-direction:column;overflow:hidden}
+  .search-area{padding:20px;background:white;border-bottom:1px solid var(--mist)}
+  .search-label{font-family:'Shippori Mincho',serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--stamp);margin-bottom:10px;display:block}
+  .search-input-wrap{position:relative}
+  .search-input{width:100%;padding:11px 40px 11px 14px;border:1.5px solid var(--mist);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--paper);color:var(--ink);outline:none;transition:border-color 0.2s}
+  .search-input:focus{border-color:var(--vermilion)}
+  .search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#999;font-size:16px}
+  .city-tabs{padding:12px 20px 0;display:flex;gap:0;border-bottom:2px solid var(--mist);background:white}
+  .city-tab{padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;font-family:'DM Sans',sans-serif}
+  .city-tab:hover{color:var(--ink)}
+  .city-tab.active{color:var(--vermilion);border-bottom-color:var(--vermilion);font-weight:600}
+  .filters{padding:14px 20px;display:flex;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--mist);background:white}
+  .filter-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--mist);background:var(--paper);color:var(--ink);transition:all 0.15s;white-space:nowrap}
+  .filter-chip:hover{border-color:var(--vermilion);color:var(--vermilion)}
+  .filter-chip.active{background:var(--vermilion);border-color:var(--vermilion);color:white}
+  .results-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .results-list::-webkit-scrollbar{width:4px}
+  .results-list::-webkit-scrollbar-thumb{background:var(--mist);border-radius:4px}
+  .results-count{font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;padding:4px 2px 8px;font-weight:500}
+  .loading-state{text-align:center;padding:40px 20px}
+  .spinner{width:36px;height:36px;border:3px solid var(--mist);border-top-color:var(--vermilion);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-state p{font-size:13px;color:#888;line-height:1.7}
+  .card{background:white;border-radius:8px;padding:14px 16px;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;position:relative;overflow:hidden}
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background 0.2s}
+  .card:hover{border-color:var(--mist);box-shadow:0 4px 16px rgba(0,0,0,0.07)}
+  .card.active{border-color:var(--vermilion);box-shadow:0 4px 20px rgba(192,57,43,0.15)}
+  .card.active::before{background:var(--vermilion)}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+  .card-name{font-family:'Shippori Mincho',serif;font-size:15px;font-weight:600;line-height:1.3;flex:1;padding-right:8px}
+  .card-cuisine{font-size:11px;padding:3px 8px;border-radius:3px;background:#fff0ed;color:var(--stamp);font-weight:500;white-space:nowrap;align-self:flex-start;flex-shrink:0}
+  .card-address{font-size:11px;color:#aaa;margin-top:5px;line-height:1.4}
+  .card-meta{display:flex;gap:12px;margin-top:8px;font-size:12px;color:#888;align-items:center;flex-wrap:wrap}
+  .card-badges{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  .badge{font-size:10px;padding:2px 7px;border-radius:2px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
+  .badge-open{background:#e8f5e9;color:#2e7d32}
+  .badge-closed{background:#fce4ec;color:#c62828}
+  .map-container{position:relative}
+  #map{width:100%;height:100%}
+  .map-overlay{position:absolute;top:16px;right:16px;z-index:500;display:flex;flex-direction:column;gap:8px}
+  .map-btn{background:white;border:1.5px solid var(--mist);border-radius:6px;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+  .map-btn:hover{border-color:var(--vermilion);color:var(--vermilion)}
+  .detail-panel{position:absolute;bottom:0;left:0;right:0;background:white;border-top:3px solid var(--vermilion);border-radius:12px 12px 0 0;padding:20px 24px 24px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);z-index:600;max-height:55%;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,0.15)}
+  .detail-panel.visible{transform:translateY(0)}
+  .detail-close{position:absolute;top:14px;right:16px;background:var(--paper);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#666}
+  .detail-name{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:800;margin-bottom:4px;padding-right:36px}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .detail-item label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#aaa;font-weight:600;display:block;margin-bottom:3px}
+  .detail-item span{font-size:13px;font-weight:500;color:var(--ink);word-break:break-word}
+  .detail-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .detail-actions .btn{font-size:13px;padding:10px 18px}
+  .empty-state{text-align:center;padding:40px 20px;color:#aaa}
+  .empty-state .emoji{font-size:40px;margin-bottom:12px}
+  .empty-state p{font-size:13px;line-height:1.7}
+  .osm-note{padding:8px 20px;background:#fffbf5;border-top:1px solid var(--mist);font-size:10px;color:#aaa;text-align:center}
+  .osm-note a{color:var(--stamp)}
+  @media print{
+    header,.map-container,.filters,.city-tabs,.search-area,.osm-note{display:none!important}
+    .app{grid-template-columns:1fr;height:auto}
+    .sidebar{border:none;overflow:visible;height:auto}
+    .results-list{overflow:visible;height:auto}
+    body{background:white}
+    .card{break-inside:avoid;border:1px solid #ddd!important;box-shadow:none!important;page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <span>食べる</span>
+    <div class="logo-dot"></div>
+    <span style="font-size:22px;font-weight:400">Taberu</span>
+    <span class="logo-jp">JAPAN FOOD FINDER</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="window.print()">🖨 Print Guide</button>
+    <button class="btn btn-primary" id="savedBtn" onclick="showSaved()">♡ Saved (0)</button>
+  </div>
+</header>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="search-area">
+      <span class="search-label">Search Restaurants</span>
+      <div class="search-input-wrap">
+        <input class="search-input" type="text" placeholder="Name, cuisine, area..." id="searchInput" oninput="renderCards()">
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+    <div class="city-tabs">
+      <button class="city-tab active" onclick="switchCity('tokyo',this)">Tokyo</button>
+      <button class="city-tab" onclick="switchCity('osaka',this)">Osaka</button>
+      <button class="city-tab" onclick="switchCity('kyoto',this)">Kyoto</button>
+      <button class="city-tab" onclick="switchCity('sapporo',this)">Sapporo</button>
+    </div>
+    <div class="filters">
+      <button class="filter-chip active" onclick="toggleFilter('',this)">All</button>
+      <button class="filter-chip" onclick="toggleFilter('ramen',this)">🍜 Ramen</button>
+      <button class="filter-chip" onclick="toggleFilter('sushi',this)">🍣 Sushi</button>
+      <button class="filter-chip" onclick="toggleFilter('izakaya',this)">🍶 Izakaya</button>
+      <button class="filter-chip" onclick="toggleFilter('japanese',this)">🍱 Japanese</button>
+      <button class="filter-chip" onclick="toggleFilter('noodle',this)">🍝 Noodles</button>
+    </div>
+    <div class="results-list" id="resultsList"></div>
+    <div class="osm-note">Data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a></div>
+  </div>
+
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="map-overlay">
+      <button class="map-btn" onclick="fitAll()">🗺 Fit All</button>
+      <button class="map-btn" onclick="window.print()">🖨 Print</button>
+    </div>
+    <div class="detail-panel" id="detailPanel">
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CITIES={
+  tokyo:{label:'Tokyo',lat:35.6762,lng:139.6503,zoom:13,bbox:'35.53,139.44,35.82,139.92'},
+  osaka:{label:'Osaka',lat:34.6937,lng:135.5023,zoom:13,bbox:'34.57,135.37,34.80,135.63'},
+  kyoto:{label:'Kyoto',lat:35.0116,lng:135.7681,zoom:13,bbox:'34.92,135.66,35.10,135.87'},
+  sapporo:{label:'Sapporo',lat:43.0618,lng:141.3545,zoom:13,bbox:'42.98,141.27,43.14,141.44'}
+};
+let map,markersLayer,allRestaurants=[],activeCity='tokyo',activeFilter='',activeId=null,savedIds=new Set(),cache={};
+
+function initMap(){
+  map=L.map('map',{zoomControl:false}).setView([35.6762,139.6503],13);
+  L.control.zoom({position:'bottomright'}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © Carto',maxZoom:19}).addTo(map);
+  markersLayer=L.layerGroup().addTo(map);
+  fetchRestaurants('tokyo');
+}
+
+async function fetchRestaurants(city){
+  if(cache[city]){allRestaurants=cache[city];renderAll();return;}
+  showLoading(city);
+  const{bbox}=CITIES[city];
+  const query=`[out:json][timeout:25];(node["amenity"="restaurant"](${bbox});node["amenity"="fast_food"]["cuisine"~"ramen|sushi|japanese|izakaya|noodle|tempura|yakitori|udon|soba|tonkatsu",i](${bbox}););out body 200;`;
+  try{
+    const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)});
+    const data=await res.json();
+    const parsed=data.elements.filter(e=>e.tags&&e.tags.name).map(parseOSM).filter(r=>r.lat&&r.lng);
+    cache[city]=parsed;allRestaurants=parsed;renderAll();
+  }catch(err){showError();}
+}
+
+function parseOSM(e){
+  const t=e.tags||{};
+  const cuisine=(t.cuisine||'').toLowerCase().replace(/_/g,' ');
+  const hours=t.opening_hours||'';
+  let open=null;
+  if(hours){const h=hours.toLowerCase();open=!(h.includes('closed')||h==='off');}
+  return{
+    id:e.id,name:t.name||t['name:en']||'Unnamed',nameEN:t['name:en']||'',
+    lat:e.lat,lng:e.lon,cuisine:cuisine||'restaurant',
+    address:[t['addr:housenumber'],t['addr:street'],t['addr:city']].filter(Boolean).join(', ')||t['addr:full']||'',
+    phone:t.phone||t['contact:phone']||'',website:t.website||t['contact:website']||'',
+    hours:hours,open:open,english_menu:t['menu:en']==='yes',
+    takeaway:t.takeaway==='yes',delivery:t.delivery==='yes'
+  };
+}
+
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  return allRestaurants.filter(r=>{
+    const cm=!activeFilter||r.cuisine.includes(activeFilter);
+    const sm=!q||r.name.toLowerCase().includes(q)||r.nameEN.toLowerCase().includes(q)||r.cuisine.includes(q)||r.address.toLowerCase().includes(q);
+    return cm&&sm;
+  });
+}
+
+function renderAll(){renderCards();renderMarkers();}
+
+function renderCards(){
+  const list=document.getElementById('resultsList');
+  const filtered=getFiltered();
+  list.innerHTML=`<div class="results-count">${filtered.length} of ${allRestaurants.length} restaurants</div>`;
+  if(!filtered.length){list.innerHTML+=`<div class="empty-state"><div class="emoji">🍜</div><p>No restaurants match.<br>Try clearing search or filter.</p></div>`;return;}
+  filtered.slice(0,80).forEach(r=>{
+    const card=document.createElement('div');
+    card.className=`card${activeId===r.id?' active':''}`;
+    card.id=`card-${r.id}`;
+    card.onclick=()=>selectRestaurant(r.id);
+    const cl=r.cuisine?r.cuisine.split(';')[0].split(',')[0].trim():'restaurant';
+    card.innerHTML=`
+      <div class="card-top">
+        <div class="card-name">${r.name}${r.nameEN&&r.nameEN!==r.name?`<br><span style="font-size:11px;color:#aaa;font-weight:400">${r.nameEN}</span>`:''}</div>
+        <span class="card-cuisine">${cl}</span>
+      </div>
+      ${r.address?`<div class="card-address">📍 ${r.address}</div>`:''}
+      <div class="card-meta">
+        ${r.hours?`<span>🕐 ${r.hours.split(';')[0].substring(0,28)}${r.hours.length>28?'…':''}</span>`:''}
+        ${r.takeaway?`<span>🥡 Takeaway</span>`:''}
+        ${r.delivery?`<span>🛵 Delivery</span>`:''}
+      </div>
+      <div class="card-badges">
+        ${r.open===true?'<span class="badge badge-open">Open</span>':r.open===false?'<span class="badge badge-closed">Closed</span>':''}
+        ${r.english_menu?'<span class="badge" style="background:#e3f2fd;color:#1565c0">EN Menu</span>':''}
+        ${savedIds.has(r.id)?'<span class="badge" style="background:#fff3e0;color:#e65100">♡ Saved</span>':''}
+      </div>`;
+    list.appendChild(card);
+  });
+  if(filtered.length>80){
+    const m=document.createElement('div');
+    m.className='empty-state';
+    m.innerHTML=`<p style="font-size:12px">Showing top 80 of ${filtered.length}.<br>Use search or filters to narrow down.</p>`;
+    list.appendChild(m);
+  }
+}
+
+function renderMarkers(){
+  markersLayer.clearLayers();
+  getFiltered().slice(0,80).forEach(r=>{
+    const ia=activeId===r.id;
+    const icon=L.divIcon({className:'',html:`<div style="background:${ia?'#1a1008':'#c0392b'};border:2.5px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:${ia?26:20}px;height:${ia?26:20}px;box-shadow:0 2px 8px rgba(0,0,0,0.35)"></div>`,iconSize:[ia?26:20,ia?26:20],iconAnchor:[ia?13:10,ia?26:20]});
+    const marker=L.marker([r.lat,r.lng],{icon});
+    marker.bindTooltip(`<b>${r.name}</b>${r.cuisine?`<br>${r.cuisine.split(';')[0]}`:''}`,{direction:'top',offset:[0,-22]});
+    marker.on('click',()=>selectRestaurant(r.id));
+    markersLayer.addLayer(marker);
+  });
+}
+
+function selectRestaurant(id){
+  activeId=id;
+  const r=allRestaurants.find(x=>x.id===id);
+  if(!r)return;
+  const card=document.getElementById(`card-${id}`);
+  if(card)card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  map.flyTo([r.lat,r.lng],16,{duration:1});
+  showDetail(r);renderCards();renderMarkers();
+}
+
+function showDetail(r){
+  const cl=r.cuisine?r.cuisine.split(';')[0].split(',')[0].trim():'Restaurant';
+  document.getElementById('detailContent').innerHTML=`
+    <div class="detail-name">${r.name}</div>
+    ${r.nameEN&&r.nameEN!==r.name?`<div style="font-size:13px;color:#888;margin-bottom:8px">${r.nameEN}</div>`:''}
+    <div class="card-badges" style="margin-bottom:8px">
+      <span class="card-cuisine" style="font-size:11px;padding:3px 8px;border-radius:3px;background:#fff0ed;color:var(--stamp);font-weight:500">${cl}</span>
+      ${r.open===true?'<span class="badge badge-open">Open</span>':r.open===false?'<span class="badge badge-closed">Closed</span>':''}
+      ${r.english_menu?'<span class="badge" style="background:#e3f2fd;color:#1565c0">English Menu</span>':''}
+      ${r.takeaway?'<span class="badge" style="background:#e8f5e9;color:#2e7d32">Takeaway</span>':''}
+      ${r.delivery?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Delivery</span>':''}
+    </div>
+    <div class="detail-grid">
+      ${r.address?`<div class="detail-item" style="grid-column:1/-1"><label>Address</label><span>${r.address}</span></div>`:''}
+      ${r.hours?`<div class="detail-item" style="grid-column:1/-1"><label>Opening Hours</label><span style="font-size:12px">${r.hours}</span></div>`:''}
+      ${r.phone?`<div class="detail-item"><label>Phone</label><span><a href="tel:${r.phone}" style="color:var(--vermilion)">${r.phone}</a></span></div>`:''}
+      ${r.website?`<div class="detail-item"><label>Website</label><span><a href="${r.website}" target="_blank" style="color:var(--vermilion);font-size:12px">${r.website.replace(/^https?:\/\//,'').substring(0,30)}…</a></span></div>`:''}
+    </div>
+    <div class="detail-actions">
+      <button class="btn btn-primary" onclick="openMaps(${r.lat},${r.lng})">🗺 Open in Maps</button>
+      <button class="btn" style="border:1.5px solid var(--mist);color:var(--ink);background:white" onclick="toggleSave(${r.id})">${savedIds.has(r.id)?'♡ Saved':'♡ Save'}</button>
+      ${r.website?`<button class="btn" style="border:1.5px solid var(--mist);color:var(--ink);background:white" onclick="window.open('${r.website}','_blank')">🌐 Website</button>`:''}
+    </div>`;
+  document.getElementById('detailPanel').classList.add('visible');
+}
+
+function closeDetail(){document.getElementById('detailPanel').classList.remove('visible');activeId=null;renderCards();renderMarkers();}
+function openMaps(lat,lng){window.open(`https://www.google.com/maps?q=${lat},${lng}`,'_blank');}
+function toggleSave(id){savedIds.has(id)?savedIds.delete(id):savedIds.add(id);document.getElementById('savedBtn').textContent=`♡ Saved (${savedIds.size})`;const r=allRestaurants.find(x=>x.id===id);if(r)showDetail(r);renderCards();}
+function showSaved(){if(!savedIds.size){alert('No saved restaurants yet!\nClick ♡ Save on any restaurant.');return;}const names=[...savedIds].map(id=>{const r=allRestaurants.find(x=>x.id===id);return r?`• ${r.name}${r.address?' — '+r.address:''}`:''}).filter(Boolean).join('\n');alert(`Your saved restaurants:\n\n${names}\n\nUse "Print Guide" to export!`);}
+function toggleFilter(f,el){activeFilter=f;document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeId=null;closeDetail();renderAll();setTimeout(fitAll,100);}
+function switchCity(city,el){activeCity=city;activeId=null;activeFilter='';document.querySelectorAll('.city-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.filter-chip').forEach((c,i)=>c.classList.toggle('active',i===0));document.getElementById('searchInput').value='';closeDetail();const c=CITIES[city];map.setView([c.lat,c.lng],c.zoom);fetchRestaurants(city);}
+function fitAll(){const f=getFiltered().slice(0,80);if(!f.length)return;const b=L.latLngBounds(f.map(r=>[r.lat,r.lng]));map.fitBounds(b,{padding:[50,50]});}
+function showLoading(city){allRestaurants=[];markersLayer&&markersLayer.clearLayers();document.getElementById('resultsList').innerHTML=`<div class="loading-state"><div style="font-size:32px;margin-bottom:8px">🍜</div><div class="spinner"></div><p>Fetching real restaurants<br>in <b>${CITIES[city].label}</b> from OpenStreetMap…</p></div>`;}
+function showError(){document.getElementById('resultsList').innerHTML=`<div class="empty-state"><div class="emoji">😥</div><p>Could not reach OpenStreetMap.<br>Check your connection and try again.</p><button class="btn btn-primary" style="margin-top:14px" onclick="fetchRestaurants(activeCity)">Retry</button></div>`;}
+window.addEventListener('load',initMap);
+</script>
+</body>
+</html>
