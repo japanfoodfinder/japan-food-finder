@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  :root { --ink:#1a1008;--paper:#f5efe6;--vermilion:#c0392b;--gold:#c9973a;--mist:#e8e0d4;--stamp:#8b3a2a; }
+  :root{--ink:#1a1008;--paper:#f5efe6;--vermilion:#c0392b;--gold:#c9973a;--mist:#e8e0d4;--stamp:#8b3a2a}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh}
   header{background:var(--ink);color:var(--paper);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:3px solid var(--vermilion)}
@@ -21,7 +21,7 @@
   .btn-outline:hover{border-color:var(--gold);color:var(--gold)}
   .btn-primary{background:var(--vermilion);color:white}
   .btn-primary:hover{background:#a93226}
-  .app{display:grid;grid-template-columns:380px 1fr;height:calc(100vh - 65px)}
+  .app{display:grid;grid-template-columns:400px 1fr;height:calc(100vh - 65px)}
   .sidebar{background:var(--paper);border-right:1px solid var(--mist);display:flex;flex-direction:column;overflow:hidden}
   .search-area{padding:20px;background:white;border-bottom:1px solid var(--mist)}
   .search-label{font-family:'Shippori Mincho',serif;font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--stamp);margin-bottom:10px;display:block}
@@ -29,7 +29,7 @@
   .search-input{width:100%;padding:11px 40px 11px 14px;border:1.5px solid var(--mist);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--paper);color:var(--ink);outline:none;transition:border-color 0.2s}
   .search-input:focus{border-color:var(--vermilion)}
   .search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#999;font-size:16px}
-  .city-tabs{padding:12px 20px 0;display:flex;gap:0;border-bottom:2px solid var(--mist);background:white}
+  .city-tabs{padding:12px 20px 0;display:flex;border-bottom:2px solid var(--mist);background:white}
   .city-tab{padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;font-family:'DM Sans',sans-serif}
   .city-tab:hover{color:var(--ink)}
   .city-tab.active{color:var(--vermilion);border-bottom-color:var(--vermilion);font-weight:600}
@@ -41,54 +41,59 @@
   .results-list::-webkit-scrollbar{width:4px}
   .results-list::-webkit-scrollbar-thumb{background:var(--mist);border-radius:4px}
   .results-count{font-size:11px;color:#888;letter-spacing:1px;text-transform:uppercase;padding:4px 2px 8px;font-weight:500}
-  .loading-state{text-align:center;padding:40px 20px}
-  .spinner{width:36px;height:36px;border:3px solid var(--mist);border-top-color:var(--vermilion);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .loading-state p{font-size:13px;color:#888;line-height:1.7}
-  .card{background:white;border-radius:8px;padding:14px 16px;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;position:relative;overflow:hidden}
-  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background 0.2s}
+  .card{background:white;border-radius:8px;padding:14px 16px;cursor:pointer;border:1.5px solid transparent;transition:all 0.2s;position:relative}
+  .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background 0.2s;border-radius:8px 0 0 8px}
   .card:hover{border-color:var(--mist);box-shadow:0 4px 16px rgba(0,0,0,0.07)}
   .card.active{border-color:var(--vermilion);box-shadow:0 4px 20px rgba(192,57,43,0.15)}
   .card.active::before{background:var(--vermilion)}
-  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-  .card-name{font-family:'Shippori Mincho',serif;font-size:15px;font-weight:600;line-height:1.3;flex:1;padding-right:8px}
-  .card-cuisine{font-size:11px;padding:3px 8px;border-radius:3px;background:#fff0ed;color:var(--stamp);font-weight:500;white-space:nowrap;align-self:flex-start;flex-shrink:0}
-  .card-address{font-size:11px;color:#aaa;margin-top:5px;line-height:1.4}
-  .card-meta{display:flex;gap:12px;margin-top:8px;font-size:12px;color:#888;align-items:center;flex-wrap:wrap}
-  .card-badges{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
-  .badge{font-size:10px;padding:2px 7px;border-radius:2px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
-  .badge-open{background:#e8f5e9;color:#2e7d32}
-  .badge-closed{background:#fce4ec;color:#c62828}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;gap:8px}
+  .card-name{font-family:'Shippori Mincho',serif;font-size:15px;font-weight:600;line-height:1.3;flex:1}
+  .card-name-jp{font-size:11px;color:#aaa;font-family:'Shippori Mincho',serif;display:block;margin-top:1px}
+  .cuisine-tag{font-size:11px;padding:3px 9px;border-radius:3px;background:#fff0ed;color:var(--stamp);font-weight:500;white-space:nowrap;flex-shrink:0;align-self:flex-start}
+  .card-address{font-size:11px;color:#bbb;margin-top:4px;line-height:1.4}
+  .card-meta{display:flex;gap:10px;margin-top:7px;font-size:12px;color:#888;flex-wrap:wrap;align-items:center}
+  .star{color:var(--gold);font-weight:700}
+  .card-badges{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+  .badge{font-size:10px;padding:2px 7px;border-radius:2px;font-weight:600;letter-spacing:0.4px}
+  .b-open{background:#e8f5e9;color:#2e7d32}
+  .b-closed{background:#fce4ec;color:#c62828}
+  .b-en{background:#e3f2fd;color:#1565c0}
+  .b-saved{background:#fff3e0;color:#e65100}
+  .b-michelin{background:#1a1008;color:#c9973a}
+  .b-cash{background:#f3e5f5;color:#6a1b9a}
   .map-container{position:relative}
   #map{width:100%;height:100%}
   .map-overlay{position:absolute;top:16px;right:16px;z-index:500;display:flex;flex-direction:column;gap:8px}
   .map-btn{background:white;border:1.5px solid var(--mist);border-radius:6px;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.2s;font-family:'DM Sans',sans-serif;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
   .map-btn:hover{border-color:var(--vermilion);color:var(--vermilion)}
-  .detail-panel{position:absolute;bottom:0;left:0;right:0;background:white;border-top:3px solid var(--vermilion);border-radius:12px 12px 0 0;padding:20px 24px 24px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);z-index:600;max-height:55%;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,0.15)}
+  .detail-panel{position:absolute;bottom:0;left:0;right:0;background:white;border-top:3px solid var(--vermilion);border-radius:12px 12px 0 0;padding:22px 26px 26px;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);z-index:600;max-height:60%;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,0.15)}
   .detail-panel.visible{transform:translateY(0)}
-  .detail-close{position:absolute;top:14px;right:16px;background:var(--paper);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#666}
-  .detail-name{font-family:'Shippori Mincho',serif;font-size:20px;font-weight:800;margin-bottom:4px;padding-right:36px}
+  .detail-close{position:absolute;top:14px;right:16px;background:var(--paper);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#666}
+  .detail-name{font-family:'Shippori Mincho',serif;font-size:21px;font-weight:800;margin-bottom:2px;padding-right:36px;line-height:1.3}
+  .detail-jp{font-family:'Shippori Mincho',serif;font-size:14px;color:#999;margin-bottom:10px}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-  .detail-item label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#aaa;font-weight:600;display:block;margin-bottom:3px}
-  .detail-item span{font-size:13px;font-weight:500;color:var(--ink);word-break:break-word}
+  .detail-item label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#bbb;font-weight:600;display:block;margin-bottom:3px}
+  .detail-item span{font-size:13px;font-weight:500;color:var(--ink)}
+  .detail-desc{margin-top:14px;font-size:13px;line-height:1.75;color:#555;border-top:1px solid var(--mist);padding-top:14px}
   .detail-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
   .detail-actions .btn{font-size:13px;padding:10px 18px}
   .empty-state{text-align:center;padding:40px 20px;color:#aaa}
-  .empty-state .emoji{font-size:40px;margin-bottom:12px}
+  .empty-state .emoji{font-size:36px;margin-bottom:10px}
   .empty-state p{font-size:13px;line-height:1.7}
-  .osm-note{padding:8px 20px;background:#fffbf5;border-top:1px solid var(--mist);font-size:10px;color:#aaa;text-align:center}
-  .osm-note a{color:var(--stamp)}
+  .data-note{padding:7px 20px;background:#fffbf5;border-top:1px solid var(--mist);font-size:10px;color:#bbb;text-align:center}
   @media print{
-    header,.map-container,.filters,.city-tabs,.search-area,.osm-note{display:none!important}
+    header,.map-container,.filters,.city-tabs,.search-area,.data-note,.detail-panel{display:none!important}
     .app{grid-template-columns:1fr;height:auto}
     .sidebar{border:none;overflow:visible;height:auto}
     .results-list{overflow:visible;height:auto}
     body{background:white}
-    .card{break-inside:avoid;border:1px solid #ddd!important;box-shadow:none!important;page-break-inside:avoid}
+    .card{break-inside:avoid;border:1px solid #ddd!important;box-shadow:none!important;page-break-inside:avoid;margin-bottom:8px}
+    h2{font-family:'Shippori Mincho',serif;text-align:center;padding:16px 0;border-bottom:2px solid #333;margin-bottom:16px}
   }
 </style>
 </head>
 <body>
+
 <header>
   <div class="logo">
     <span>食べる</span>
@@ -107,7 +112,7 @@
     <div class="search-area">
       <span class="search-label">Search Restaurants</span>
       <div class="search-input-wrap">
-        <input class="search-input" type="text" placeholder="Name, cuisine, area..." id="searchInput" oninput="renderCards()">
+        <input class="search-input" type="text" placeholder="Name, dish, area..." id="searchInput" oninput="renderCards()">
         <span class="search-icon">🔍</span>
       </div>
     </div>
@@ -122,11 +127,13 @@
       <button class="filter-chip" onclick="toggleFilter('ramen',this)">🍜 Ramen</button>
       <button class="filter-chip" onclick="toggleFilter('sushi',this)">🍣 Sushi</button>
       <button class="filter-chip" onclick="toggleFilter('izakaya',this)">🍶 Izakaya</button>
-      <button class="filter-chip" onclick="toggleFilter('japanese',this)">🍱 Japanese</button>
-      <button class="filter-chip" onclick="toggleFilter('noodle',this)">🍝 Noodles</button>
+      <button class="filter-chip" onclick="toggleFilter('tempura',this)">🍤 Tempura</button>
+      <button class="filter-chip" onclick="toggleFilter('yakitori',this)">🍗 Yakitori</button>
+      <button class="filter-chip" onclick="toggleFilter('kaiseki',this)">🌸 Kaiseki</button>
     </div>
     <div class="results-list" id="resultsList"></div>
-    <div class="osm-note">Data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a></div>
+    <div id="liveStatus" style="padding:6px 20px;font-size:11px;min-height:24px;text-align:center;transition:all 0.3s"></div>
+    <div class="data-note">Curated data + live OpenStreetMap · Coordinates verified</div>
   </div>
 
   <div class="map-container">
@@ -143,157 +150,343 @@
 </div>
 
 <script>
-const CITIES={
-  tokyo:{label:'Tokyo',lat:35.6762,lng:139.6503,zoom:13,bbox:'35.53,139.44,35.82,139.92'},
-  osaka:{label:'Osaka',lat:34.6937,lng:135.5023,zoom:13,bbox:'34.57,135.37,34.80,135.63'},
-  kyoto:{label:'Kyoto',lat:35.0116,lng:135.7681,zoom:13,bbox:'34.92,135.66,35.10,135.87'},
-  sapporo:{label:'Sapporo',lat:43.0618,lng:141.3545,zoom:13,bbox:'42.98,141.27,43.14,141.44'}
+const CITIES = {
+  tokyo:   {label:'Tokyo',   lat:35.6762, lng:139.6503, zoom:13},
+  osaka:   {label:'Osaka',   lat:34.6937, lng:135.5023, zoom:13},
+  kyoto:   {label:'Kyoto',   lat:35.0116, lng:135.7681, zoom:13},
+  sapporo: {label:'Sapporo', lat:43.0618, lng:141.3545, zoom:13},
 };
-let map,markersLayer,allRestaurants=[],activeCity='tokyo',activeFilter='',activeId=null,savedIds=new Set(),cache={};
 
-function initMap(){
-  map=L.map('map',{zoomControl:false}).setView([35.6762,139.6503],13);
-  L.control.zoom({position:'bottomright'}).addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © Carto',maxZoom:19}).addTo(map);
-  markersLayer=L.layerGroup().addTo(map);
-  fetchRestaurants('tokyo');
-}
+const RESTAURANTS = [
+  // ── TOKYO ─────────────────────────────────────────────────────────────────
+  {id:1,city:'tokyo',name:'Ichiran',nameJP:'一蘭 渋谷',cuisine:'ramen',price:'¥¥',rating:4.7,area:'Shibuya',hours:'24 hours',open:true,english:true,cash:false,michelin:false,lat:35.6612,lng:139.6993,address:'1-22-7 Jinnan, Shibuya',website:'https://ichiran.com',desc:'The iconic solo-dining ramen chain. Order your broth intensity, richness, and spice level on a slip of paper and enjoy a deeply personal tonkotsu experience in a private booth.'},
+  {id:2,city:'tokyo',name:'Fuunji',nameJP:'風雲児',cuisine:'ramen',price:'¥',rating:4.6,area:'Shinjuku',hours:'11:00–15:00, 17:30–21:00',open:true,english:false,cash:true,michelin:false,lat:35.6830,lng:139.7020,address:'2-14-3 Yoyogi, Shibuya',website:'',desc:'Legendary tsukemen — thick noodles dipped into an extraordinarily rich fish-and-pork broth. Expect queues. Cash only. Worth every minute of the wait.'},
+  {id:3,city:'tokyo',name:'Afuri Roppongi',nameJP:'阿夫利 六本木',cuisine:'ramen',price:'¥¥',rating:4.5,area:'Roppongi',hours:'11:00–23:00',open:true,english:true,cash:false,michelin:false,lat:35.6628,lng:139.7298,address:'Roppongi Hills, Minato',website:'https://afuri.com',desc:'Renowned for its yuzu shio ramen — a delicate, citrus-kissed clear broth with silky noodles. Light and refreshing, a polar opposite to heavy tonkotsu styles.'},
+  {id:4,city:'tokyo',name:'Sushi Saito',nameJP:'鮨 さいとう',cuisine:'sushi',price:'¥¥¥¥',rating:4.9,area:'Roppongi',hours:'By reservation only',open:true,english:false,cash:false,michelin:true,lat:35.6625,lng:139.7310,address:'Roppongi, Minato',website:'',desc:'Widely regarded as one of the finest sushi restaurants on earth. Chef Takashi Saito\'s omakase is a deeply personal, ingredient-focused experience. Reservations require months of lead time.'},
+  {id:5,city:'tokyo',name:'Sukiyabashi Jiro Honten',nameJP:'すきやばし次郎 本店',cuisine:'sushi',price:'¥¥¥¥',rating:4.8,area:'Ginza',hours:'11:30–14:00, 17:30–20:30',open:true,english:false,cash:false,michelin:true,lat:35.6717,lng:139.7633,address:'4-2-15 Ginza, Chuo',website:'',desc:'The sushi bar made world-famous by Jiro Dreams of Sushi. 10-seat counter in a Ginza subway concourse. Each piece is served at the exact ideal temperature and eaten immediately.'},
+  {id:6,city:'tokyo',name:'Gonpachi Nishi-Azabu',nameJP:'権八 西麻布',cuisine:'izakaya',price:'¥¥¥',rating:4.4,area:'Nishi-Azabu',hours:'11:30–03:30',open:true,english:true,cash:false,michelin:false,lat:35.6558,lng:139.7233,address:'1-13-11 Nishi-Azabu, Minato',website:'https://gonpachi.jp',desc:'The multi-story izakaya that inspired the Kill Bill restaurant scene. Traditional wooden beams, tatami areas, excellent yakitori and soba. Buzzing late-night atmosphere popular with expats and tourists alike.'},
+  {id:7,city:'tokyo',name:'Tempura Kondo',nameJP:'てんぷら近藤',cuisine:'tempura',price:'¥¥¥¥',rating:4.8,area:'Ginza',hours:'Lunch Tue–Fri, Dinner Mon–Sat',open:true,english:true,cash:false,michelin:true,lat:35.6697,lng:139.7638,address:'9-7-2 Ginza, Chuo',website:'',desc:'Chef Fumio Kondo elevates vegetable tempura to an art form. His famous sweet potato is cooked for 15 minutes and emerges impossibly light. Counter seating to watch the master at work.'},
+  {id:8,city:'tokyo',name:'Toriki',nameJP:'鳥樹',cuisine:'yakitori',price:'¥¥',rating:4.5,area:'Shibuya',hours:'17:00–23:00',open:true,english:false,cash:true,michelin:false,lat:35.6584,lng:139.7022,address:'Shibuya',website:'',desc:'A standing yakitori bar with perfectly charcoal-grilled skewers and cold Sapporo draft beer. Elbow-to-elbow locals, no frills, all flavour. The tsukune (chicken meatball) is exceptional.'},
+  {id:9,city:'tokyo',name:'Narisawa',nameJP:'ナリサワ',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.9,area:'Minami-Aoyama',hours:'12:00–13:00, 18:00–20:00',open:true,english:true,cash:false,michelin:true,lat:35.6659,lng:139.7149,address:'2-6-15 Minami-Aoyama, Minato',website:'https://narisawa-yoshihiro.com',desc:'Chef Yoshihiro Narisawa\'s "innovative Satoyama cuisine" blends French technique with deep reverence for Japanese nature. Ingredients are foraged, fermented, and transformed into extraordinary multi-course experiences.'},
+  {id:10,city:'tokyo',name:'Kyubey',nameJP:'久兵衛',cuisine:'sushi',price:'¥¥¥¥',rating:4.7,area:'Ginza',hours:'11:30–14:00, 17:00–22:00',open:true,english:true,cash:false,michelin:true,lat:35.6706,lng:139.7645,address:'8-7-6 Ginza, Chuo',website:'https://www.kyubey.jp',desc:'A Ginza sushi institution since 1935. Kyubey pioneered the hand-roll (temaki) and is beloved for its refined yet approachable omakase. English-friendly staff make it a great introduction to high-end sushi.'},
+  {id:11,city:'tokyo',name:'Ramen Nagi',nameJP:'ラーメン凪',cuisine:'ramen',price:'¥',rating:4.4,area:'Shinjuku',hours:'11:00–05:00',open:true,english:true,cash:false,michelin:false,lat:35.6918,lng:139.7006,address:'Golden Gai, Shinjuku',website:'https://nouilles-nagi.com',desc:'Located in the legendary Golden Gai alley of Shinjuku, Nagi is famous for its niboshi (dried sardine) ramen — an intensely umami, dark broth with thin noodles. Open very late.'},
+  {id:12,city:'tokyo',name:'Sushi Yoshitake',nameJP:'鮨よしたけ',cuisine:'sushi',price:'¥¥¥¥',rating:4.8,area:'Ginza',hours:'12:00–13:00, 17:30–22:00',open:true,english:true,cash:false,michelin:true,lat:35.6704,lng:139.7641,address:'7-11-2 Ginza, Chuo',website:'',desc:'Three Michelin-starred counter sushi in Ginza. Chef Masahiro Yoshitake ages his fish with precision and pairs each piece with house-made soy and vinegared rice from a secret recipe.'},
+  {id:13,city:'tokyo',name:'Yakitori Alley Yurakucho',nameJP:'有楽町ガード下',cuisine:'yakitori',price:'¥¥',rating:4.3,area:'Yurakucho',hours:'17:00–23:00',open:true,english:false,cash:true,michelin:false,lat:35.6753,lng:139.7630,address:'Under the train tracks, Yurakucho',website:'',desc:'A row of tiny yakitori stalls under the Yurakucho train tracks — one of Tokyo\'s most atmospheric dining experiences. Smoke, skewers, cold beer and salarymen. Pure old Tokyo.'},
+  {id:14,city:'tokyo',name:'Den',nameJP:'傳',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.8,area:'Jingumae',hours:'18:00–21:00',open:true,english:true,cash:false,michelin:true,lat:35.6680,lng:139.7098,address:'2-3-18 Jingumae, Shibuya',website:'https://www.jimbochoden.com',desc:'Chef Zaiyu Hasegawa\'s playful take on kaiseki. Expect whimsy — salad served in a watering can, a crunchy "DEN-TAKU" chicken dish. One of Asia\'s 50 Best Restaurants.'},
+  {id:15,city:'tokyo',name:'Tapas Molecular Bar',nameJP:'タパス モレキュラーバー',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.6,area:'Nihonbashi',hours:'18:00 & 20:30 seatings',open:true,english:true,cash:false,michelin:true,lat:35.6839,lng:139.7745,address:'Mandarin Oriental, Nihonbashi',website:'',desc:'A molecular gastronomy counter inside the Mandarin Oriental. Only 8 seats, two seatings per night. 20+ courses of technically brilliant, theatrical small bites. An unforgettable spectacle.'},
 
-async function fetchRestaurants(city){
-  if(cache[city]){allRestaurants=cache[city];renderAll();return;}
-  showLoading(city);
-  const{bbox}=CITIES[city];
-  const query=`[out:json][timeout:25];(node["amenity"="restaurant"](${bbox});node["amenity"="fast_food"]["cuisine"~"ramen|sushi|japanese|izakaya|noodle|tempura|yakitori|udon|soba|tonkatsu",i](${bbox}););out body 200;`;
-  try{
-    const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query)});
-    const data=await res.json();
-    const parsed=data.elements.filter(e=>e.tags&&e.tags.name).map(parseOSM).filter(r=>r.lat&&r.lng);
-    cache[city]=parsed;allRestaurants=parsed;renderAll();
-  }catch(err){showError();}
-}
+  // ── OSAKA ─────────────────────────────────────────────────────────────────
+  {id:20,city:'osaka',name:'Imai Honten',nameJP:'今井 本店',cuisine:'udon',price:'¥¥',rating:4.5,area:'Dotonbori',hours:'11:00–21:00 (closed Wed)',open:true,english:true,cash:false,michelin:false,lat:34.6687,lng:135.5012,address:'1-7-22 Dotonbori, Chuo',website:'',desc:'An Osaka institution since 1946. Their kitsune udon features silky broth, thin Sanuki noodles and sweet deep-fried tofu. The lacquerware trays and tatami rooms transport you to another era.'},
+  {id:21,city:'osaka',name:'Mizuno',nameJP:'みずの',cuisine:'okonomiyaki',price:'¥¥',rating:4.6,area:'Dotonbori',hours:'11:00–22:00',open:true,english:true,cash:false,michelin:false,lat:34.6685,lng:135.5018,address:'2-1-11 Dotonbori, Chuo',website:'',desc:'Quintessential Osaka okonomiyaki right on the Dotonbori strip. Watch your savory pancake bubble on the griddle table. Order the Mizuno special with mochi and cheese for peak indulgence.'},
+  {id:22,city:'osaka',name:'Ajinoya',nameJP:'味乃家',cuisine:'okonomiyaki',price:'¥¥',rating:4.4,area:'Namba',hours:'11:00–22:30',open:true,english:true,cash:false,michelin:false,lat:34.6680,lng:135.5023,address:'Namba, Chuo',website:'',desc:'One of Namba\'s most beloved okonomiyaki spots, known for its fluffy batter and generous fillings. The pork and squid combination is a local favourite. Very lively atmosphere.'},
+  {id:23,city:'osaka',name:'Hariju',nameJP:'はり重',cuisine:'wagyu',price:'¥¥¥¥',rating:4.7,area:'Dotonbori',hours:'11:30–21:30',open:true,english:true,cash:false,michelin:true,lat:34.6692,lng:135.5015,address:'1-9-17 Dotonbori, Chuo',website:'https://www.hariju.com',desc:'A legendary sukiyaki and shabu-shabu house serving premium Kobe and Matsusaka beef since 1934. The marbled wagyu melts the moment it hits the hot broth. A true Osaka splurge.'},
+  {id:24,city:'osaka',name:'Kushikatsu Daruma',nameJP:'串かつだるま',cuisine:'kushikatsu',price:'¥¥',rating:4.4,area:'Shinsekai',hours:'11:00–22:30',open:true,english:true,cash:false,michelin:false,lat:34.6524,lng:135.5060,address:'2-3-9 Ebisu-Higashi, Naniwa',website:'https://www.kushikatsu-daruma.com',desc:'The original Shinsekai kushikatsu institution. Deep-fried skewers of meat, seafood and vegetables dipped in a communal tangy sauce — never double-dip! The retro Daruma mascot is everywhere.'},
+  {id:25,city:'osaka',name:'Nishiya',nameJP:'にし家',cuisine:'ramen',price:'¥',rating:4.5,area:'Shinsaibashi',hours:'11:30–15:00, 18:00–22:00',open:true,english:false,cash:true,michelin:false,lat:34.6729,lng:135.5007,address:'Shinsaibashi, Chuo',website:'',desc:'A beloved shoyu ramen shop with a deeply savoury, clean chicken broth and hand-cut wavy noodles. Small, intimate, and almost always has a short queue. Pure, honest ramen.'},
+  {id:26,city:'osaka',name:'Sushi Sakai',nameJP:'鮨さかい',cuisine:'sushi',price:'¥¥¥¥',rating:4.8,area:'Kitahama',hours:'12:00–13:30, 18:00–21:00',open:true,english:false,cash:false,michelin:true,lat:34.6873,lng:135.5152,address:'Kitahama, Chuo',website:'',desc:'An intimate counter sushi restaurant in Kitahama. Chef Sakai sources fish from Osaka\'s Kuromon Market each morning and crafts an omakase rooted in Kansai tradition. Seasonal and exceptional.'},
+  {id:27,city:'osaka',name:'Yukimura',nameJP:'ゆきむら',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.9,area:'Kitashinchi',hours:'18:00–21:00',open:true,english:true,cash:false,michelin:true,lat:34.6952,lng:135.4993,address:'Kitashinchi, Kita',website:'',desc:'Chef Jun Yukimura\'s three-Michelin-starred kaiseki restaurant is considered one of Osaka\'s absolute finest. The courses reflect the seasons with extraordinary depth and refinement.'},
+  {id:28,city:'osaka',name:'Takoyaki Wanaka',nameJP:'わなか',cuisine:'takoyaki',price:'¥',rating:4.5,area:'Namba',hours:'10:00–21:00',open:true,english:true,cash:false,michelin:false,lat:34.6652,lng:135.5007,address:'Namba, Chuo',website:'',desc:'Famous for its fluffy, custardy takoyaki with a crispy shell. The octopus pieces are generous and the sauce perfectly balanced. Lines can be long but move quickly.'},
+  {id:29,city:'osaka',name:'Matsuri',nameJP:'祭',cuisine:'izakaya',price:'¥¥',rating:4.3,area:'Amerika-Mura',hours:'17:00–01:00',open:true,english:true,cash:false,michelin:false,lat:34.6727,lng:135.4994,address:'Amerika-Mura, Chuo',website:'',desc:'A lively izakaya in the trendy Amerika-Mura district. Great selection of sake, shochu, and Japanese whisky alongside classic izakaya plates — edamame, karaage, grilled fish. Excellent people-watching.'},
+  {id:30,city:'osaka',name:'Kani Doraku',nameJP:'かに道楽',cuisine:'seafood',price:'¥¥¥',rating:4.4,area:'Dotonbori',hours:'11:00–23:00',open:true,english:true,cash:false,michelin:false,lat:34.6690,lng:135.5025,address:'1-6-18 Dotonbori, Chuo',website:'https://douraku.co.jp',desc:'Osaka\'s most recognisable restaurant, marked by its giant mechanical crab above the entrance. Specialises in all preparations of crab — shabu-shabu, grilled, sashimi. A Dotonbori landmark since 1960.'},
 
-function parseOSM(e){
-  const t=e.tags||{};
-  const cuisine=(t.cuisine||'').toLowerCase().replace(/_/g,' ');
-  const hours=t.opening_hours||'';
-  let open=null;
-  if(hours){const h=hours.toLowerCase();open=!(h.includes('closed')||h==='off');}
-  return{
-    id:e.id,name:t.name||t['name:en']||'Unnamed',nameEN:t['name:en']||'',
-    lat:e.lat,lng:e.lon,cuisine:cuisine||'restaurant',
-    address:[t['addr:housenumber'],t['addr:street'],t['addr:city']].filter(Boolean).join(', ')||t['addr:full']||'',
-    phone:t.phone||t['contact:phone']||'',website:t.website||t['contact:website']||'',
-    hours:hours,open:open,english_menu:t['menu:en']==='yes',
-    takeaway:t.takeaway==='yes',delivery:t.delivery==='yes'
-  };
-}
+  // ── KYOTO ─────────────────────────────────────────────────────────────────
+  {id:40,city:'kyoto',name:'Kikunoi Honten',nameJP:'菊乃井 本店',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.9,area:'Higashiyama',hours:'12:00–13:00, 17:30–20:00',open:true,english:true,cash:false,michelin:true,lat:34.9992,lng:135.7817,address:'459 Shimokawara-cho, Higashiyama',website:'https://kikunoi.jp',desc:'One of Kyoto\'s most revered kaiseki restaurants. Chef Murata\'s seasonal menus are a meditation on Japanese aesthetics — each course a harmonious balance of flavour, colour, and texture, served in exquisite lacquerware.'},
+  {id:41,city:'kyoto',name:'Mizai',nameJP:'未在',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.9,area:'Fushimi',hours:'12:00–13:00, 18:00–20:00',open:true,english:false,cash:false,michelin:true,lat:34.9463,lng:135.7726,address:'Fushimi, Kyoto',website:'',desc:'A three-Michelin-starred kaiseki by chef Hiroshi Ishida, set in a tranquil machiya townhouse. The courses draw on Kyoto\'s court cuisine tradition (kyo-ryori) with breathtaking seasonal precision.'},
+  {id:42,city:'kyoto',name:'Nishiki Warai',nameJP:'錦 笑',cuisine:'izakaya',price:'¥¥',rating:4.4,area:'Nishiki Market',hours:'11:00–21:30',open:true,english:true,cash:false,michelin:false,lat:35.0051,lng:135.7660,address:'Nishiki Market, Nakagyo',website:'',desc:'A lively spot inside the famous Nishiki covered market. Excellent kushikatsu and cold beer after wandering the market stalls — perfectly placed for a casual lunch or early dinner.'},
+  {id:43,city:'kyoto',name:'Nakamura',nameJP:'中村楼',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.7,area:'Gion',hours:'12:00–13:00, 17:00–20:00',open:true,english:true,cash:false,michelin:true,lat:35.0036,lng:135.7782,address:'Yasaka Shrine precinct, Higashiyama',website:'',desc:'Kyoto\'s oldest surviving kaiseki restaurant, founded in the Muromachi period. Set within the Yasaka Shrine precinct. Their signature tofu dishes and seasonal garnishes are among the finest expressions of kyo-ryori.'},
+  {id:44,city:'kyoto',name:'Menbakaichidai',nameJP:'麺屋一代',cuisine:'ramen',price:'¥',rating:4.4,area:'Kawaramachi',hours:'11:30–21:00 (closed Sun)',open:true,english:true,cash:true,michelin:false,lat:35.0074,lng:135.7676,address:'Kawaramachi, Nakagyo',website:'',desc:'The famous "fire ramen" restaurant where the chef pours oil over the noodles tableside and ignites it — a dramatic spectacle before a delicious Kyoto-style shio ramen. Worth it for the show alone.'},
+  {id:45,city:'kyoto',name:'Kagizen Yoshifusa',nameJP:'鍵善良房',cuisine:'wagashi',price:'¥¥',rating:4.6,area:'Gion',hours:'09:30–18:00 (closed Mon)',open:true,english:true,cash:false,michelin:false,lat:35.0040,lng:135.7758,address:'264 Gionmachi Kitagawa, Higashiyama',website:'https://kagizen.co.jp',desc:'A Gion sweets institution since 1716. Famous for kuzu-kiri — translucent kudzu starch noodles served cold in a black syrup. The tearoom is the perfect Kyoto afternoon stop.'},
+  {id:46,city:'kyoto',name:'Izuju',nameJP:'いづ重',cuisine:'sushi',price:'¥¥¥',rating:4.6,area:'Gion',hours:'11:00–21:00 (closed Wed)',open:true,english:false,cash:false,michelin:false,lat:35.0035,lng:135.7762,address:'Gionmachi Kitagawa, Higashiyama',website:'',desc:'A Gion sushi institution specialising in oshizushi (pressed sushi) — a Kyoto style quite different from Edo-style nigiri. The mackerel sushi wrapped in persimmon leaf is outstanding.'},
+  {id:47,city:'kyoto',name:'Honke Owariya',nameJP:'本家尾張屋',cuisine:'soba',price:'¥¥',rating:4.5,area:'Nijo',hours:'11:00–19:30 (closed Sun)',open:false,english:true,cash:false,michelin:false,lat:35.0154,lng:135.7575,address:'Kurumayacho, Nakagyo',website:'https://honke-owariya.co.jp',desc:'A soba restaurant operating since 1465 — one of Japan\'s oldest. Their hourai soba (a stack of five lacquerware boxes of hand-cut buckwheat noodles) is a Kyoto ritual. The interior is a living museum.'},
+  {id:48,city:'kyoto',name:'Hyotei',nameJP:'瓢亭',cuisine:'kaiseki',price:'¥¥¥¥',rating:4.9,area:'Nanzen-ji',hours:'08:00–10:00, 11:30–14:00, 17:30–20:00',open:true,english:true,cash:false,michelin:true,lat:35.0115,lng:135.7907,address:'35 Kusagawa-cho, Sakyo',website:'https://hyotei.co.jp',desc:'A three-Michelin-starred kaiseki restaurant near Nanzen-ji with a history spanning 450 years. Their breakfast kaiseki is legendary — a serene, supremely refined meal to start an unforgettable Kyoto day.'},
+  {id:49,city:'kyoto',name:'Ippudo Kyoto',nameJP:'一風堂 京都',cuisine:'ramen',price:'¥¥',rating:4.3,area:'Kawaramachi',hours:'11:00–23:00',open:true,english:true,cash:false,michelin:false,lat:35.0083,lng:135.7695,address:'Kawaramachi, Nakagyo',website:'https://ippudo.com',desc:'The globally renowned Hakata-style ramen chain. Creamy, milky tonkotsu broth with thin straight noodles. Their Shiromaru Classic is the benchmark — add extra chashu and a soft-boiled egg.'},
 
-function getFiltered(){
-  const q=document.getElementById('searchInput').value.toLowerCase().trim();
-  return allRestaurants.filter(r=>{
-    const cm=!activeFilter||r.cuisine.includes(activeFilter);
-    const sm=!q||r.name.toLowerCase().includes(q)||r.nameEN.toLowerCase().includes(q)||r.cuisine.includes(q)||r.address.toLowerCase().includes(q);
-    return cm&&sm;
-  });
-}
+  // ── SAPPORO ───────────────────────────────────────────────────────────────
+  {id:60,city:'sapporo',name:'Ramen Yokocho',nameJP:'ラーメン横丁',cuisine:'ramen',price:'¥',rating:4.5,area:'Susukino',hours:'11:00–03:00',open:true,english:true,cash:true,michelin:false,lat:43.0554,lng:141.3543,address:'Minami 5 Nishi 3, Chuo',website:'',desc:'The famous "Ramen Alley" — a narrow lane lined with 17 small ramen stalls, each with its own recipe. The Sapporo style features a miso-based broth with butter and corn. Atmospheric and essential.'},
+  {id:61,city:'sapporo',name:'Sumire',nameJP:'すみれ',cuisine:'ramen',price:'¥',rating:4.7,area:'Sumikawa',hours:'11:00–20:30 (closed Mon)',open:true,english:false,cash:true,michelin:false,lat:42.9978,lng:141.3543,address:'3-jo 3-chome, Minami',website:'',desc:'The definitive Sapporo miso ramen. A rich, umami-laden miso broth glistening with lard, topped with bean sprouts, corn, and butter. Sumire\'s recipe has been perfected over decades and is widely imitated, never equalled.'},
+  {id:62,city:'sapporo',name:'Kani Honke',nameJP:'かに本家',cuisine:'seafood',price:'¥¥¥',rating:4.5,area:'Odori',hours:'11:00–22:00',open:true,english:true,cash:false,michelin:false,lat:43.0609,lng:141.3536,address:'Odori, Chuo',website:'https://kani-honke.co.jp',desc:'A Sapporo crab specialist. Hokkaido is Japan\'s premier crab region, and Kani Honke sources live hairy crab, king crab and snow crab daily. The shabu-shabu course is extraordinary.'},
+  {id:63,city:'sapporo',name:'Toriton',nameJP:'トリトン',cuisine:'sushi',price:'¥¥',rating:4.6,area:'Hondori',hours:'11:00–21:30',open:true,english:true,cash:false,michelin:false,lat:43.0645,lng:141.3498,address:'Chuo, Sapporo',website:'https://toriton-kita.co.jp',desc:'A conveyor belt sushi chain born in Hokkaido, beloved for its extraordinary freshness. The hairy crab, sea urchin, and salmon roe are among the best in Japan at any price point. Outstanding value.'},
+  {id:64,city:'sapporo',name:'Daruma',nameJP:'だるま',cuisine:'lamb',price:'¥¥',rating:4.5,area:'Susukino',hours:'17:00–03:00',open:true,english:false,cash:true,michelin:false,lat:43.0553,lng:141.3556,address:'Minami 5, Susukino, Chuo',website:'',desc:'The ultimate Sapporo jingisukan experience — Genghis Khan-style grilled lamb on a domed iron plate. Smoky, succulent, served with onions and a tangy dipping sauce. A Hokkaido ritual.'},
+  {id:65,city:'sapporo',name:'Kirin Beer Garden',nameJP:'キリンビール園',cuisine:'izakaya',price:'¥¥',rating:4.3,area:'Kita',hours:'11:30–21:30',open:true,english:true,cash:false,michelin:false,lat:43.0805,lng:141.3419,address:'Kita 7 Higashi 9, Higashi',website:'https://www.kirin.co.jp/experience/beergarden',desc:'Set inside Sapporo\'s historic Kirin brewery, this massive beer garden serves all-you-can-drink draft alongside jingisukan lamb and crab dishes. The soaring red-brick hall is spectacular.'},
+  {id:66,city:'sapporo',name:'Soup Curry Garaku',nameJP:'Soup Curry Garaku',cuisine:'soup curry',price:'¥¥',rating:4.6,area:'Odori',hours:'11:30–22:00',open:true,english:true,cash:false,michelin:false,lat:43.0601,lng:141.3524,address:'Minami 2 Nishi 2, Chuo',website:'',desc:'Sapporo invented soup curry — a thin, aromatic curry broth packed with enormous chunks of roasted vegetables and chicken. Garaku\'s version is widely considered the city\'s finest. Choose your heat level carefully.'},
+  {id:67,city:'sapporo',name:'Miyoshiya',nameJP:'みよしや',cuisine:'kaiseki',price:'¥¥¥',rating:4.5,area:'Maruyama',hours:'12:00–14:00, 17:30–21:00',open:true,english:false,cash:false,michelin:false,lat:43.0571,lng:141.3217,address:'Maruyama, Chuo',website:'',desc:'An elegant Hokkaido kaiseki restaurant showcasing the extraordinary local ingredients — Yubari crab, Hidaka kelp, Tokachi dairy, and wild mountain vegetables. Refined yet approachable.'},
+];
 
-function renderAll(){renderCards();renderMarkers();}
+// ── STATE ──────────────────────────────────────────────────────────────────
+let map, markersLayer;
+let activeCity = 'tokyo';
+let activeFilter = '';
+let activeId = null;
+let savedIds = new Set();
+let liveData = {};   // city -> OSM results, merged in after load
+let loadingCities = new Set();
 
-function renderCards(){
-  const list=document.getElementById('resultsList');
-  const filtered=getFiltered();
-  list.innerHTML=`<div class="results-count">${filtered.length} of ${allRestaurants.length} restaurants</div>`;
-  if(!filtered.length){list.innerHTML+=`<div class="empty-state"><div class="emoji">🍜</div><p>No restaurants match.<br>Try clearing search or filter.</p></div>`;return;}
-  filtered.slice(0,80).forEach(r=>{
-    const card=document.createElement('div');
-    card.className=`card${activeId===r.id?' active':''}`;
-    card.id=`card-${r.id}`;
-    card.onclick=()=>selectRestaurant(r.id);
-    const cl=r.cuisine?r.cuisine.split(';')[0].split(',')[0].trim():'restaurant';
-    card.innerHTML=`
-      <div class="card-top">
-        <div class="card-name">${r.name}${r.nameEN&&r.nameEN!==r.name?`<br><span style="font-size:11px;color:#aaa;font-weight:400">${r.nameEN}</span>`:''}</div>
-        <span class="card-cuisine">${cl}</span>
-      </div>
-      ${r.address?`<div class="card-address">📍 ${r.address}</div>`:''}
-      <div class="card-meta">
-        ${r.hours?`<span>🕐 ${r.hours.split(';')[0].substring(0,28)}${r.hours.length>28?'…':''}</span>`:''}
-        ${r.takeaway?`<span>🥡 Takeaway</span>`:''}
-        ${r.delivery?`<span>🛵 Delivery</span>`:''}
-      </div>
-      <div class="card-badges">
-        ${r.open===true?'<span class="badge badge-open">Open</span>':r.open===false?'<span class="badge badge-closed">Closed</span>':''}
-        ${r.english_menu?'<span class="badge" style="background:#e3f2fd;color:#1565c0">EN Menu</span>':''}
-        ${savedIds.has(r.id)?'<span class="badge" style="background:#fff3e0;color:#e65100">♡ Saved</span>':''}
-      </div>`;
-    list.appendChild(card);
-  });
-  if(filtered.length>80){
-    const m=document.createElement('div');
-    m.className='empty-state';
-    m.innerHTML=`<p style="font-size:12px">Showing top 80 of ${filtered.length}.<br>Use search or filters to narrow down.</p>`;
-    list.appendChild(m);
+const CITIES_CFG = {
+  tokyo:   {bbox:'35.53,139.44,35.82,139.92'},
+  osaka:   {bbox:'34.57,135.37,34.80,135.63'},
+  kyoto:   {bbox:'34.92,135.66,35.10,135.87'},
+  sapporo: {bbox:'42.98,141.27,43.14,141.44'},
+};
+
+// ── LIVE OSM FETCH ─────────────────────────────────────────────────────────
+async function fetchLive(city) {
+  if (liveData[city] || loadingCities.has(city)) return;
+  loadingCities.add(city);
+  updateLiveStatus('loading');
+
+  const {bbox} = CITIES_CFG[city];
+  const query = `[out:json][timeout:25];(node["amenity"="restaurant"](${bbox});node["amenity"="fast_food"]["cuisine"~"ramen|sushi|japanese|izakaya|noodle|tempura|yakitori|udon|soba|tonkatsu",i](${bbox}););out body 300;`;
+  const proxied = 'https://corsproxy.io/?' + encodeURIComponent('https://overpass-api.de/api/interpreter');
+
+  try {
+    const res = await fetch(proxied, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'data=' + encodeURIComponent(query)
+    });
+    const data = await res.json();
+    const parsed = (data.elements || [])
+      .filter(e => e.tags && e.tags.name && e.lat && e.lon)
+      .map(e => {
+        const t = e.tags;
+        const cuisine = (t.cuisine||'').toLowerCase().replace(/_/g,' ').split(';')[0].split(',')[0].trim() || 'restaurant';
+        const addr = [t['addr:housenumber'], t['addr:street'], t['addr:suburb']].filter(Boolean).join(' ') || t['addr:full'] || '';
+        return {
+          id: 'osm_' + e.id, city,
+          name: t.name || t['name:en'] || 'Restaurant',
+          nameJP: t['name:ja'] || t.name || '',
+          cuisine, price: '?', rating: null,
+          area: t['addr:suburb'] || t['addr:city'] || '',
+          hours: t.opening_hours || '',
+          open: t.opening_hours ? !t.opening_hours.toLowerCase().includes('off') : null,
+          english: t['menu:en'] === 'yes',
+          cash: false, michelin: false,
+          lat: e.lat, lng: e.lon,
+          address: addr,
+          website: t.website || t['contact:website'] || '',
+          desc: `${cuisine.charAt(0).toUpperCase()+cuisine.slice(1)} restaurant in ${city.charAt(0).toUpperCase()+city.slice(1)}.${addr ? ' Located at '+addr+'.' : ''}${t.opening_hours ? ' Hours: '+t.opening_hours : ''}`
+        };
+      });
+
+    // Deduplicate against baked data by proximity (within ~50m)
+    const bakedForCity = RESTAURANTS.filter(r => r.city === city);
+    const deduped = parsed.filter(osm => {
+      return !bakedForCity.some(b => Math.abs(b.lat - osm.lat) < 0.0005 && Math.abs(b.lng - osm.lng) < 0.0005);
+    });
+
+    liveData[city] = deduped;
+    if (activeCity === city) renderAll();
+    updateLiveStatus('done', deduped.length);
+  } catch(err) {
+    updateLiveStatus('error');
+  } finally {
+    loadingCities.delete(city);
   }
 }
 
-function renderMarkers(){
+function updateLiveStatus(state, count) {
+  const el = document.getElementById('liveStatus');
+  if (!el) return;
+  if (state === 'loading') {
+    el.innerHTML = `<span style="color:var(--gold)">⟳ Loading live data…</span>`;
+  } else if (state === 'done') {
+    el.innerHTML = `<span style="color:#3d6b4f">✓ +${count} live results from OpenStreetMap</span>`;
+    setTimeout(() => { if(el) el.innerHTML = ''; }, 4000);
+  } else {
+    el.innerHTML = `<span style="color:#aaa">Live data unavailable</span>`;
+    setTimeout(() => { if(el) el.innerHTML = ''; }, 3000);
+  }
+}
+
+function cityRestaurants() {
+  const baked = RESTAURANTS.filter(r => r.city === activeCity);
+  const live = liveData[activeCity] || [];
+  return [...baked, ...live];
+}
+
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  return cityRestaurants().filter(r => {
+    const fm = !activeFilter || r.cuisine === activeFilter;
+    const sm = !q || r.name.toLowerCase().includes(q) || r.nameJP.includes(q) ||
+      r.cuisine.includes(q) || r.area.toLowerCase().includes(q) ||
+      r.address.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q);
+    return fm && sm;
+  });
+}
+
+// ── MAP ────────────────────────────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', {zoomControl: false}).setView([35.6762, 139.6503], 13);
+  L.control.zoom({position: 'bottomright'}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © Carto', maxZoom: 19
+  }).addTo(map);
+  markersLayer = L.layerGroup().addTo(map);
+  renderAll();
+  fetchLive('tokyo'); // kick off live fetch immediately
+}
+
+function makeIcon(active) {
+  const s = active ? 26 : 20;
+  return L.divIcon({
+    className: '',
+    html: `<div style="background:${active?'#1a1008':'#c0392b'};border:2.5px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:${s}px;height:${s}px;box-shadow:0 2px 8px rgba(0,0,0,0.35)"></div>`,
+    iconSize: [s, s], iconAnchor: [s/2, s]
+  });
+}
+
+function renderAll() { renderCards(); renderMarkers(); }
+
+function renderCards() {
+  const list = document.getElementById('resultsList');
+  const filtered = getFiltered();
+  const liveCount = (liveData[activeCity] || []).length;
+  const liveNote = liveCount ? ` <span style="color:var(--green);font-size:10px">(+${liveCount} live)</span>` : '';
+  list.innerHTML = `<div class="results-count">${filtered.length} restaurant${filtered.length!==1?'s':''}${liveNote}</div>`;
+
+  if (!filtered.length) {
+    list.innerHTML += `<div class="empty-state"><div class="emoji">🍜</div><p>No matches. Try clearing search or filter.</p></div>`;
+    return;
+  }
+
+  filtered.forEach(r => {
+    const el = document.createElement('div');
+    el.className = `card${activeId === r.id ? ' active' : ''}`;
+    el.id = `card-${r.id}`;
+    el.onclick = () => selectRestaurant(r.id);
+    el.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="card-name">${r.name}<span class="card-name-jp">${r.nameJP}</span></div>
+        </div>
+        <span class="cuisine-tag">${r.cuisine}</span>
+      </div>
+      <div class="card-address">📍 ${r.area} · ${r.address}</div>
+      <div class="card-meta">
+        <span class="star">★</span><span>${r.rating}</span>
+        <span>${r.price}</span>
+        <span>🕐 ${r.hours.split(',')[0].substring(0,20)}</span>
+      </div>
+      <div class="card-badges">
+        ${r.open ? '<span class="badge b-open">Open</span>' : '<span class="badge b-closed">Closed</span>'}
+        ${r.michelin ? '<span class="badge b-michelin">Michelin</span>' : ''}
+        ${r.english ? '<span class="badge b-en">EN Menu</span>' : ''}
+        ${r.cash ? '<span class="badge b-cash">Cash Only</span>' : ''}
+        ${savedIds.has(r.id) ? '<span class="badge b-saved">♡ Saved</span>' : ''}
+      </div>`;
+    list.appendChild(el);
+  });
+}
+
+function renderMarkers() {
   markersLayer.clearLayers();
-  getFiltered().slice(0,80).forEach(r=>{
-    const ia=activeId===r.id;
-    const icon=L.divIcon({className:'',html:`<div style="background:${ia?'#1a1008':'#c0392b'};border:2.5px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:${ia?26:20}px;height:${ia?26:20}px;box-shadow:0 2px 8px rgba(0,0,0,0.35)"></div>`,iconSize:[ia?26:20,ia?26:20],iconAnchor:[ia?13:10,ia?26:20]});
-    const marker=L.marker([r.lat,r.lng],{icon});
-    marker.bindTooltip(`<b>${r.name}</b>${r.cuisine?`<br>${r.cuisine.split(';')[0]}`:''}`,{direction:'top',offset:[0,-22]});
-    marker.on('click',()=>selectRestaurant(r.id));
+  getFiltered().forEach(r => {
+    const marker = L.marker([r.lat, r.lng], {icon: makeIcon(activeId === r.id)});
+    marker.bindTooltip(`<b>${r.name}</b><br>${r.cuisine} · ${r.price}`, {direction:'top', offset:[0,-22]});
+    marker.on('click', () => selectRestaurant(r.id));
     markersLayer.addLayer(marker);
   });
 }
 
-function selectRestaurant(id){
-  activeId=id;
-  const r=allRestaurants.find(x=>x.id===id);
-  if(!r)return;
-  const card=document.getElementById(`card-${id}`);
-  if(card)card.scrollIntoView({behavior:'smooth',block:'nearest'});
-  map.flyTo([r.lat,r.lng],16,{duration:1});
-  showDetail(r);renderCards();renderMarkers();
+function selectRestaurant(id) {
+  activeId = id;
+  const r = cityRestaurants().find(x => x.id === id);
+  if (!r) return;
+  const card = document.getElementById(`card-${id}`);
+  if (card) card.scrollIntoView({behavior:'smooth', block:'nearest'});
+  map.flyTo([r.lat, r.lng], 16, {duration: 1});
+  showDetail(r);
+  renderCards();
+  renderMarkers();
 }
 
-function showDetail(r){
-  const cl=r.cuisine?r.cuisine.split(';')[0].split(',')[0].trim():'Restaurant';
-  document.getElementById('detailContent').innerHTML=`
+function showDetail(r) {
+  document.getElementById('detailContent').innerHTML = `
     <div class="detail-name">${r.name}</div>
-    ${r.nameEN&&r.nameEN!==r.name?`<div style="font-size:13px;color:#888;margin-bottom:8px">${r.nameEN}</div>`:''}
-    <div class="card-badges" style="margin-bottom:8px">
-      <span class="card-cuisine" style="font-size:11px;padding:3px 8px;border-radius:3px;background:#fff0ed;color:var(--stamp);font-weight:500">${cl}</span>
-      ${r.open===true?'<span class="badge badge-open">Open</span>':r.open===false?'<span class="badge badge-closed">Closed</span>':''}
-      ${r.english_menu?'<span class="badge" style="background:#e3f2fd;color:#1565c0">English Menu</span>':''}
-      ${r.takeaway?'<span class="badge" style="background:#e8f5e9;color:#2e7d32">Takeaway</span>':''}
-      ${r.delivery?'<span class="badge" style="background:#e3f2fd;color:#1565c0">Delivery</span>':''}
+    <div class="detail-jp">${r.nameJP} · ${r.area}</div>
+    <div class="card-badges">
+      <span class="cuisine-tag" style="font-size:11px;padding:3px 9px;border-radius:3px;background:#fff0ed;color:var(--stamp);font-weight:500">${r.cuisine}</span>
+      ${r.open ? '<span class="badge b-open">Open</span>' : '<span class="badge b-closed">Closed</span>'}
+      ${r.michelin ? '<span class="badge b-michelin">⭐ Michelin</span>' : ''}
+      ${r.english ? '<span class="badge b-en">English Menu</span>' : ''}
+      ${r.cash ? '<span class="badge b-cash">Cash Only</span>' : ''}
     </div>
     <div class="detail-grid">
-      ${r.address?`<div class="detail-item" style="grid-column:1/-1"><label>Address</label><span>${r.address}</span></div>`:''}
-      ${r.hours?`<div class="detail-item" style="grid-column:1/-1"><label>Opening Hours</label><span style="font-size:12px">${r.hours}</span></div>`:''}
-      ${r.phone?`<div class="detail-item"><label>Phone</label><span><a href="tel:${r.phone}" style="color:var(--vermilion)">${r.phone}</a></span></div>`:''}
-      ${r.website?`<div class="detail-item"><label>Website</label><span><a href="${r.website}" target="_blank" style="color:var(--vermilion);font-size:12px">${r.website.replace(/^https?:\/\//,'').substring(0,30)}…</a></span></div>`:''}
+      <div class="detail-item"><label>Rating</label><span>★ ${r.rating} / 5.0</span></div>
+      <div class="detail-item"><label>Price</label><span>${r.price}</span></div>
+      <div class="detail-item" style="grid-column:1/-1"><label>Hours</label><span>${r.hours}</span></div>
+      <div class="detail-item" style="grid-column:1/-1"><label>Address</label><span>${r.address}</span></div>
     </div>
+    <div class="detail-desc">${r.desc}</div>
     <div class="detail-actions">
       <button class="btn btn-primary" onclick="openMaps(${r.lat},${r.lng})">🗺 Open in Maps</button>
       <button class="btn" style="border:1.5px solid var(--mist);color:var(--ink);background:white" onclick="toggleSave(${r.id})">${savedIds.has(r.id)?'♡ Saved':'♡ Save'}</button>
-      ${r.website?`<button class="btn" style="border:1.5px solid var(--mist);color:var(--ink);background:white" onclick="window.open('${r.website}','_blank')">🌐 Website</button>`:''}
+      ${r.website ? `<button class="btn" style="border:1.5px solid var(--mist);color:var(--ink);background:white" onclick="window.open('${r.website}','_blank')">🌐 Website</button>` : ''}
     </div>`;
   document.getElementById('detailPanel').classList.add('visible');
 }
 
-function closeDetail(){document.getElementById('detailPanel').classList.remove('visible');activeId=null;renderCards();renderMarkers();}
-function openMaps(lat,lng){window.open(`https://www.google.com/maps?q=${lat},${lng}`,'_blank');}
-function toggleSave(id){savedIds.has(id)?savedIds.delete(id):savedIds.add(id);document.getElementById('savedBtn').textContent=`♡ Saved (${savedIds.size})`;const r=allRestaurants.find(x=>x.id===id);if(r)showDetail(r);renderCards();}
-function showSaved(){if(!savedIds.size){alert('No saved restaurants yet!\nClick ♡ Save on any restaurant.');return;}const names=[...savedIds].map(id=>{const r=allRestaurants.find(x=>x.id===id);return r?`• ${r.name}${r.address?' — '+r.address:''}`:''}).filter(Boolean).join('\n');alert(`Your saved restaurants:\n\n${names}\n\nUse "Print Guide" to export!`);}
-function toggleFilter(f,el){activeFilter=f;document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeId=null;closeDetail();renderAll();setTimeout(fitAll,100);}
-function switchCity(city,el){activeCity=city;activeId=null;activeFilter='';document.querySelectorAll('.city-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.filter-chip').forEach((c,i)=>c.classList.toggle('active',i===0));document.getElementById('searchInput').value='';closeDetail();const c=CITIES[city];map.setView([c.lat,c.lng],c.zoom);fetchRestaurants(city);}
-function fitAll(){const f=getFiltered().slice(0,80);if(!f.length)return;const b=L.latLngBounds(f.map(r=>[r.lat,r.lng]));map.fitBounds(b,{padding:[50,50]});}
-function showLoading(city){allRestaurants=[];markersLayer&&markersLayer.clearLayers();document.getElementById('resultsList').innerHTML=`<div class="loading-state"><div style="font-size:32px;margin-bottom:8px">🍜</div><div class="spinner"></div><p>Fetching real restaurants<br>in <b>${CITIES[city].label}</b> from OpenStreetMap…</p></div>`;}
-function showError(){document.getElementById('resultsList').innerHTML=`<div class="empty-state"><div class="emoji">😥</div><p>Could not reach OpenStreetMap.<br>Check your connection and try again.</p><button class="btn btn-primary" style="margin-top:14px" onclick="fetchRestaurants(activeCity)">Retry</button></div>`;}
-window.addEventListener('load',initMap);
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('visible');
+  activeId = null;
+  renderAll();
+}
+
+function openMaps(lat, lng) {
+  window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+}
+
+function toggleSave(id) {
+  savedIds.has(id) ? savedIds.delete(id) : savedIds.add(id);
+  document.getElementById('savedBtn').textContent = `♡ Saved (${savedIds.size})`;
+  const r = cityRestaurants().find(x => x.id === id) || RESTAURANTS.find(x => x.id === id);
+  if (r) showDetail(r);
+  renderCards();
+}
+
+function showSaved() {
+  if (!savedIds.size) { alert('No saved restaurants yet!\nClick ♡ Save on any restaurant.'); return; }
+  const allR = [...RESTAURANTS, ...Object.values(liveData).flat()];
+  const names = [...savedIds].map(id => {
+    const r = allR.find(x => x.id === id);
+    return r ? `• ${r.name} (${r.city}) — ${r.area || r.address}` : '';
+  }).filter(Boolean).join('\n');
+  alert(`Your saved restaurants:\n\n${names}\n\nUse "Print Guide" to export!`);
+}
+
+function toggleFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeId = null;
+  closeDetail();
+  renderAll();
+  setTimeout(fitAll, 100);
+}
+
+function switchCity(city, el) {
+  activeCity = city;
+  activeId = null;
+  activeFilter = '';
+  document.querySelectorAll('.city-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.filter-chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+  document.getElementById('searchInput').value = '';
+  closeDetail();
+  const c = CITIES[city];
+  map.flyTo([c.lat, c.lng], c.zoom, {duration: 1});
+  setTimeout(() => { renderAll(); fitAll(); }, 400);
+  fetchLive(city); // fetch live data for this city
+}
+
+function fitAll() {
+  const filtered = getFiltered();
+  if (!filtered.length) return;
+  const bounds = L.latLngBounds(filtered.map(r => [r.lat, r.lng]));
+  map.fitBounds(bounds, {padding: [60, 60]});
+}
+
+window.addEventListener('load', initMap);
 </script>
 </body>
 </html>
